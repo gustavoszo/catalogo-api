@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+﻿using CatalogoApi.Validations;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
@@ -14,6 +15,7 @@ namespace CatalogoApi.Models
 
         [Required]
         [StringLength(150)]
+        [MaiuscFirstLetter]
         public string Name { get; set; }
 
         [StringLength(255)]

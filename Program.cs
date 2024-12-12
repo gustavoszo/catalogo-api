@@ -1,5 +1,8 @@
 
 using CatalogoApi.Data;
+using CatalogoApi.Exceptions;
+using CatalogoApi.Services;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -12,7 +15,11 @@ namespace CatalogoApi
         {
             var builder = WebApplication.CreateBuilder(args);
 
+
             // Add services to the container.
+            builder.Services.AddScoped<CategoryService>();
+            builder.Services.AddScoped<ProductService>();
+
             string? dbConnection = builder.Configuration.GetConnectionString("dbConnection");
 
             builder.Services.AddDbContext<AppDbContext>(options =>
@@ -37,6 +44,9 @@ namespace CatalogoApi
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
+            // Cada middleware no pipeline processa a requisição conforme ela passa pelo pipeline. O ASP.NET Core chama o método InvokeAsync automaticamente para cada middleware registrado.
+            app.UseMiddleware<Exceptions.ExceptionHandlerMiddleware>();
 
             app.UseHttpsRedirection();
 
