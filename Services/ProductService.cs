@@ -39,7 +39,7 @@ namespace CatalogoApi.Services
 
         public Product Update(int id, Product product)
         {
-            Product? savedProduct = _dbContext.Categories.AsNoTracking().FirstOrDefault(c => c.ProductId == id);
+            Product? savedProduct = _dbContext.Products.AsNoTracking().FirstOrDefault(p => p.ProductId == id);
             if (savedProduct == null) throw new EntityNotFoundException($"Product com id '{id}' não encontrado");
 
             if (product.Name != null) savedProduct.Name = product.Name;

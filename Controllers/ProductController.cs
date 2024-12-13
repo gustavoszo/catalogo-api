@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace CatalogoApi.Controllers
 {
     [ApiController]
-    [Route("[Controller]")]
+    [Route("api/v1/[Controller]")]
     public class ProductController : ControllerBase
     {
         private readonly AppDbContext _dbContext;
@@ -17,14 +17,6 @@ namespace CatalogoApi.Controllers
         {
             _productService = productService;
             _dbContext = dbContext;
-        }
-
-        [HttpGet("produtos")]
-        public ActionResult<IEnumerable<Product>> GetAllWithProducts([FromQuery] int page)
-        {
-            if (page < 0) page = 0;
-            IEnumerable<Product> categories = _productService.FindAll(page);
-            return Ok(categories);
         }
 
         [HttpGet]

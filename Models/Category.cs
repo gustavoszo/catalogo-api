@@ -15,7 +15,7 @@ namespace CatalogoApi.Models
 
         [StringLength(255)]
         public string ImageUrl { get; set; }
-        List<Category> _categories; 
+
         public ICollection<Product> Products { get; set; }
 
     }

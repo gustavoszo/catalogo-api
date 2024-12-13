@@ -52,7 +52,7 @@ namespace CatalogoApi.Exceptions
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = statusCode;
 
-            return context.Response.WriteAsync(JsonSerializer.Serialize(errorMessage));
+            return context.Response.WriteAsync(errorMessage.ToJson());
         }
     }
 

@@ -21,6 +21,12 @@ namespace CatalogoApi.Services
             return categories;
         }
 
+        public IEnumerable<Category> FindAllWithProducts(int page)
+        {
+            IEnumerable<Category> categories = _dbContext.Categories.Include(c => c.Products).Skip(5 * page).Take(5).AsNoTracking();
+            return categories;
+        }
+
         public Category FindById(int id)
         {
             Category? category = _dbContext.Categories.AsNoTracking().FirstOrDefault(c => c.CategoryId == id);

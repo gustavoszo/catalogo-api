@@ -1,6 +1,7 @@
 
 using CatalogoApi.Data;
 using CatalogoApi.Exceptions;
+using CatalogoApi.Filters;
 using CatalogoApi.Services;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +20,7 @@ namespace CatalogoApi
             // Add services to the container.
             builder.Services.AddScoped<CategoryService>();
             builder.Services.AddScoped<ProductService>();
+            builder.Services.AddScoped<ApiLoggingFilter>();
 
             string? dbConnection = builder.Configuration.GetConnectionString("dbConnection");
 
