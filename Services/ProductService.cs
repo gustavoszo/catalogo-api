@@ -9,24 +9,24 @@ namespace CatalogoApi.Services
     public class ProductService
     {
 
-        private readonly IProductRepository _productRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly CategoryService _categoryService;
 
-        public ProductService(IProductRepository productRepository, CategoryService categoryService)
+        public ProductService(IUnitOfWork unitOfWork, CategoryService categoryService)
         {
-            _productRepository = productRepository;
+            _unitOfWork = unitOfWork;
             _categoryService = categoryService;
         }
 
         public IEnumerable<Product> FindAll(int page)
         {
-            IEnumerable<Product> products = _productRepository.FindAll();
+            IEnumerable<Product> products = _unitOfWork.ProductRepository.FindAll();
             return products;
         }
 
         public Product FindById(int id)
         {
-            Product? product = _productRepository.FindById(p => p.ProductId == id);
+            Product? product = _unitOfWork.ProductRepository.FindById(p => p.ProductId == id);
             if (product == null) throw new EntityNotFoundException($"Product com id '{id}' não encontrado");
 
             return product;
@@ -35,7 +35,8 @@ namespace CatalogoApi.Services
         public Product Create(Product product)
         {
             product.Category = _categoryService.FindById(product.CategoryId.Value);
-            _productRepository.Create(product);
+            _unitOfWork.ProductRepository.Create(product);
+            _unitOfWork.Commit();
 
             return product;
         }
@@ -52,9 +53,10 @@ namespace CatalogoApi.Services
             if (product.Price != null) savedProduct.Price = product.Price;
             if (product.Name != null) savedProduct.Name = product.Name;
             if (product.ImageUrl != null) savedProduct.ImageUrl = product.ImageUrl;
-            
 
-            _productRepository.Update(savedProduct);
+
+            _unitOfWork.ProductRepository.Update(savedProduct);
+            _unitOfWork.Commit();
 
             return savedProduct;
         }
@@ -62,7 +64,8 @@ namespace CatalogoApi.Services
         public void Delete(int id)
         {
             Product? product = FindById(id);
-            _productRepository.Delete(product);
+            _unitOfWork.ProductRepository.Delete(product);
+            _unitOfWork.Commit();
         }
 
 

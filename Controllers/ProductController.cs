@@ -10,7 +10,7 @@ namespace CatalogoApi.Controllers
     [Route("api/v1/[Controller]")]
     public class ProductController : ControllerBase
     {
-        private ProductService _productService;
+        private readonly ProductService _productService;
 
         public ProductController(ProductService productService)
         {

@@ -9,28 +9,28 @@ namespace CatalogoApi.Services
     public class CategoryService
     {
 
-        private readonly ICategoryRepository _categoryRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public CategoryService(ICategoryRepository categoryRepository)
+        public CategoryService(IUnitOfWork unitOfWork)
         {
-            _categoryRepository = categoryRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public IEnumerable<Category> FindAll(int page)
         {
-            IEnumerable<Category> categories = _categoryRepository.FindAll();
+            IEnumerable<Category> categories = _unitOfWork.CategoryRepository.FindAll();
             return categories;
         }
 
         public IEnumerable<Category> FindAllWithProducts(int page)
         {
-            IEnumerable<Category> categories = _categoryRepository.FindAllWithProducts();
+            IEnumerable<Category> categories = _unitOfWork.CategoryRepository.FindAllWithProducts();
             return categories;
         }
 
         public Category FindById(int id)
         {
-            Category? category = _categoryRepository.FindById(c => c.CategoryId == id);
+            Category? category = _unitOfWork.CategoryRepository.FindById(c => c.CategoryId == id);
             if (category == null) throw new EntityNotFoundException($"Category com id '{id}' não encontrado");
 
             return category;
@@ -38,7 +38,8 @@ namespace CatalogoApi.Services
 
         public Category Create(Category category)
         {
-            _categoryRepository.Create(category);
+            _unitOfWork.CategoryRepository.Create(category);
+            _unitOfWork.Commit();
 
             return category;
         }
@@ -50,7 +51,8 @@ namespace CatalogoApi.Services
             if(category.Name != null) savedCategory.Name = category.Name;
             if (category.ImageUrl != null) savedCategory.ImageUrl = category.ImageUrl;
 
-            _categoryRepository.Update(savedCategory);
+            _unitOfWork.CategoryRepository.Update(savedCategory);
+            _unitOfWork.Commit();
 
             return savedCategory;
         }
@@ -59,7 +61,8 @@ namespace CatalogoApi.Services
         {
             Category? category = FindById(id);
 
-            _categoryRepository.Delete(category);
+            _unitOfWork.CategoryRepository.Delete(category);
+            _unitOfWork.Commit();
         }
 
     }

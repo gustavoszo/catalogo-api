@@ -10,7 +10,7 @@ namespace CatalogoApi.Controllers
     [Route("api/v1/[Controller]")]
     public class CategoryController : ControllerBase
     {
-        private CategoryService _categoryService; 
+        private readonly CategoryService _categoryService; 
         private ILogger<CategoryController> _logger;
 
         public CategoryController(CategoryService categoryService, ILogger<CategoryController> logger)
