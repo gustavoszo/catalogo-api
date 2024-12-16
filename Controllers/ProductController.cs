@@ -10,13 +10,11 @@ namespace CatalogoApi.Controllers
     [Route("api/v1/[Controller]")]
     public class ProductController : ControllerBase
     {
-        private readonly AppDbContext _dbContext;
         private ProductService _productService;
 
-        public ProductController(AppDbContext dbContext, ProductService productService)
+        public ProductController(ProductService productService)
         {
             _productService = productService;
-            _dbContext = dbContext;
         }
 
         [HttpGet]
@@ -30,9 +28,9 @@ namespace CatalogoApi.Controllers
         [HttpPost]
         public IActionResult Create([FromBody] Product product)
         {
-            _productService.Create(product);
+            product = _productService.Create(product);
 
-            return CreatedAtAction(nameof(GetById), product.ProductId);
+            return CreatedAtAction(nameof(GetById), new { id = product.ProductId }, product);
         }
 
         [HttpGet("{id:int:min(1)}")]
@@ -45,7 +43,7 @@ namespace CatalogoApi.Controllers
         [HttpPut("{id:int}")]
         public IActionResult Update(int id, Product product)
         {
-            _productService.Update(id, product);
+            product = _productService.Update(id, product);
             return Ok(product);
         }
 

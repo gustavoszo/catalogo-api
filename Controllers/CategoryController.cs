@@ -10,14 +10,16 @@ namespace CatalogoApi.Controllers
     [Route("api/v1/[Controller]")]
     public class CategoryController : ControllerBase
     {
-        private CategoryService _categoryService;
+        private CategoryService _categoryService; 
+        private ILogger<CategoryController> _logger;
 
-        public CategoryController(AppDbContext dbContext, CategoryService categoryService)
+        public CategoryController(CategoryService categoryService, ILogger<CategoryController> logger)
         {
             _categoryService = categoryService;
+            _logger = logger;
         }
 
-        [HttpGet("produtos")]
+        [HttpGet("products")]
         public ActionResult<IEnumerable<Category>> GetAllWithProducts([FromQuery] int page)
         {
             if (page < 0) page = 0;
@@ -37,8 +39,8 @@ namespace CatalogoApi.Controllers
         public IActionResult Create([FromBody] Category category)
         {
             _categoryService.Create(category);
-
-            return CreatedAtAction(nameof(GetById), category.CategoryId);
+            
+            return CreatedAtAction(nameof(GetById), new { id = category.CategoryId }, category);
         }
 
         [HttpGet("{id:int:min(1)}")]
@@ -51,7 +53,7 @@ namespace CatalogoApi.Controllers
         [HttpPut("{id:int}")]
         public IActionResult Update(int id, Category category)
         {
-            _categoryService.Update(id, category);
+            category = _categoryService.Update(id, category);
             return Ok(category);
         }
 

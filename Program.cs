@@ -2,6 +2,7 @@
 using CatalogoApi.Data;
 using CatalogoApi.Exceptions;
 using CatalogoApi.Filters;
+using CatalogoApi.Repositories;
 using CatalogoApi.Services;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +22,9 @@ namespace CatalogoApi
             builder.Services.AddScoped<CategoryService>();
             builder.Services.AddScoped<ProductService>();
             builder.Services.AddScoped<ApiLoggingFilter>();
+            builder.Services.AddScoped<IProductRepository, ProductRepository>();
+            builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+            builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
             string? dbConnection = builder.Configuration.GetConnectionString("dbConnection");
 

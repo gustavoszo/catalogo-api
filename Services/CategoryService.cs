@@ -1,6 +1,7 @@
 ﻿using CatalogoApi.Data;
 using CatalogoApi.Exceptions;
 using CatalogoApi.Models;
+using CatalogoApi.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace CatalogoApi.Services
@@ -8,28 +9,28 @@ namespace CatalogoApi.Services
     public class CategoryService
     {
 
-        private AppDbContext _dbContext;
+        private readonly ICategoryRepository _categoryRepository;
 
-        public CategoryService(AppDbContext dbContext)
+        public CategoryService(ICategoryRepository categoryRepository)
         {
-            _dbContext = dbContext;
+            _categoryRepository = categoryRepository;
         }
 
         public IEnumerable<Category> FindAll(int page)
         {
-            IEnumerable<Category> categories = _dbContext.Categories.Skip(5 * page).Take(5).AsNoTracking();
+            IEnumerable<Category> categories = _categoryRepository.FindAll();
             return categories;
         }
 
         public IEnumerable<Category> FindAllWithProducts(int page)
         {
-            IEnumerable<Category> categories = _dbContext.Categories.Include(c => c.Products).Skip(5 * page).Take(5).AsNoTracking();
+            IEnumerable<Category> categories = _categoryRepository.FindAllWithProducts();
             return categories;
         }
 
         public Category FindById(int id)
         {
-            Category? category = _dbContext.Categories.AsNoTracking().FirstOrDefault(c => c.CategoryId == id);
+            Category? category = _categoryRepository.FindById(c => c.CategoryId == id);
             if (category == null) throw new EntityNotFoundException($"Category com id '{id}' não encontrado");
 
             return category;
@@ -37,33 +38,28 @@ namespace CatalogoApi.Services
 
         public Category Create(Category category)
         {
-            _dbContext.Categories.Add(category);
-            _dbContext.SaveChanges();
+            _categoryRepository.Create(category);
 
             return category;
         }
 
         public Category Update(int id, Category category)
         {
-            Category? savedCategory = _dbContext.Categories.AsNoTracking().FirstOrDefault(c => c.CategoryId == id);
-            if (savedCategory == null) throw new EntityNotFoundException($"Category com id '{id}' não encontrado");
+            Category? savedCategory = FindById(id);
 
             if(category.Name != null) savedCategory.Name = category.Name;
             if (category.ImageUrl != null) savedCategory.ImageUrl = category.ImageUrl;
 
-            _dbContext.Categories.Add(category);
-            _dbContext.SaveChanges();
+            _categoryRepository.Update(savedCategory);
 
-            return category;
+            return savedCategory;
         }
 
         public void Delete(int id)
         {
-            Category? category = _dbContext.Categories.AsNoTracking().FirstOrDefault(c => c.CategoryId == id);
-            if (category == null) throw new EntityNotFoundException($"Category com id '{id}' não encontrado");
+            Category? category = FindById(id);
 
-            _dbContext.Categories.Remove(category);
-            _dbContext.SaveChanges();
+            _categoryRepository.Delete(category);
         }
 
     }

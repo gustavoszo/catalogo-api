@@ -19,24 +19,26 @@ namespace CatalogoApi.Models
         public string Name { get; set; }
 
         [StringLength(255)]
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         [Required]
         [Column(TypeName = "decimal(10,2)")]
-        public double Price { get; set; }
+        public double? Price { get; set; }
 
         [Required]
-        public int QuantityAvaiable { get; set; }
+        public int? QuantityAvaiable { get; set; }
 
         [StringLength(255)]
-        public string ImageUrl { get; set; }
+        public string? ImageUrl { get; set; }
 
         [Required]
-        public DateTime DateRegister { get; set; }
-        public int CategoryId;
+        public DateTime DateRegister { get; set; } = DateTime.UtcNow;
+
+        [Required]
+        public int? CategoryId { get; set; }
 
         [JsonIgnore]
-        public Category Category { get; set; }
+        public Category? Category { get; set; }
 
     }
 }
