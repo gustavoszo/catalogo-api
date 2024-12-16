@@ -17,7 +17,6 @@ namespace CatalogoApi
         {
             var builder = WebApplication.CreateBuilder(args);
 
-
             // Add services to the container.
             builder.Services.AddScoped<CategoryService>();
             builder.Services.AddScoped<ProductService>();
@@ -25,6 +24,7 @@ namespace CatalogoApi
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
             builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             string? dbConnection = builder.Configuration.GetConnectionString("dbConnection");
 
@@ -32,6 +32,8 @@ namespace CatalogoApi
             {
                 options.UseMySql(dbConnection, ServerVersion.AutoDetect(dbConnection));
             });
+
+            builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             builder.Services.AddControllers().AddJsonOptions(options =>
             {

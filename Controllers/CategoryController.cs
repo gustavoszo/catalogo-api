@@ -1,4 +1,6 @@
-﻿using CatalogoApi.Data;
+﻿using AutoMapper;
+using CatalogoApi.Data;
+using CatalogoApi.Dtos;
 using CatalogoApi.Models;
 using CatalogoApi.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -10,20 +12,20 @@ namespace CatalogoApi.Controllers
     [Route("api/v1/[Controller]")]
     public class CategoryController : ControllerBase
     {
-        private readonly CategoryService _categoryService; 
-        private ILogger<CategoryController> _logger;
+        private readonly CategoryService _categoryService;
+        private readonly IMapper _mapper;
 
-        public CategoryController(CategoryService categoryService, ILogger<CategoryController> logger)
+        public CategoryController(CategoryService categoryService, IMapper mapper)
         {
             _categoryService = categoryService;
-            _logger = logger;
+            _mapper = mapper;
         }
 
         [HttpGet("products")]
         public ActionResult<IEnumerable<Category>> GetAllWithProducts([FromQuery] int page)
         {
             if (page < 0) page = 0;
-            IEnumerable<Category> categories = _categoryService.FindAllWithProducts(page);
+            IEnumerable<CategoryResponseDto> categories = _mapper.Map<IEnumerable<CategoryResponseDto>>(_categoryService.FindAllWithProducts(page));
             return Ok(categories);
         }
 
@@ -31,30 +33,31 @@ namespace CatalogoApi.Controllers
         public ActionResult<IEnumerable<Category>> GetAll([FromQuery] int page)
         {
             if (page < 0) page = 0;
-            IEnumerable<Category> categories = _categoryService.FindAll(page);
+            IEnumerable<CategoryResponseDto> categories =  _mapper.Map<IEnumerable<CategoryResponseDto>>(_categoryService.FindAll(page));
             return Ok(categories);
         }
 
         [HttpPost]
-        public IActionResult Create([FromBody] Category category)
+        public IActionResult Create([FromBody] CategoryRequestDto categoryRequestDto)
         {
-            _categoryService.Create(category);
+            Category category = _categoryService.Create(_mapper.Map<Category>(categoryRequestDto));
+            CategoryResponseDto categoryResponseDto = _mapper.Map<CategoryResponseDto>(category);
             
-            return CreatedAtAction(nameof(GetById), new { id = category.CategoryId }, category);
+            return CreatedAtAction(nameof(GetById), new { id = categoryResponseDto.CategoryId }, categoryResponseDto);
         }
 
         [HttpGet("{id:int:min(1)}")]
-        public IActionResult GetById(int id)
+        public ActionResult<CategoryResponseDto> GetById(int id)
         {
             Category category = _categoryService.FindById(id);
             return Ok(category);
         }
 
         [HttpPut("{id:int}")]
-        public IActionResult Update(int id, Category category)
+        public ActionResult<CategoryResponseDto> Update(int id, CategoryRequestDto categoryRequestDto)
         {
-            category = _categoryService.Update(id, category);
-            return Ok(category);
+            Category category = _categoryService.Update(id, _mapper.Map<Category>(categoryRequestDto));
+            return Ok(_mapper.Map<CategoryResponseDto>(category));
         }
 
         [HttpDelete("{id:int}")]
