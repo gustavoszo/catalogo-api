@@ -19,6 +19,7 @@ namespace CatalogoApi.Dtos
         public double Price { get; set; }
 
         [Required]
+        [Range(1, 999, ErrorMessage = "QuantityAvaiable deve estar entre 1 e 999")]
         public int QuantityAvaiable { get; set; }
 
         [StringLength(255)]

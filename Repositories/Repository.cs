@@ -23,7 +23,6 @@ namespace CatalogoApi.Repositories
         public T Create(T entity)
         {
             DbContext.Set<T>().Add(entity);
-            DbContext.SaveChanges();
 
             return entity;
         }
@@ -31,7 +30,6 @@ namespace CatalogoApi.Repositories
         public T Update(T entity)
         {
             DbContext.Set<T>().Update(entity);
-            DbContext.SaveChanges();
 
             return entity;
         }
@@ -44,7 +42,6 @@ namespace CatalogoApi.Repositories
         public void Delete(T entity)
         {
             DbContext.Set<T>().Remove(entity);
-            DbContext.SaveChanges();
         }
     }
 }

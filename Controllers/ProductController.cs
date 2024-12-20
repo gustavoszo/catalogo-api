@@ -3,6 +3,7 @@ using CatalogoApi.Data;
 using CatalogoApi.Dtos;
 using CatalogoApi.Models;
 using CatalogoApi.Services;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -26,8 +27,8 @@ namespace CatalogoApi.Controllers
         public ActionResult<IEnumerable<ProductResponseDto>> GetAll([FromQuery] int page)
         {
             if (page < 0) page = 0;
-            IEnumerable<ProductResponseDto> categories = _mapper.Map<IEnumerable<ProductResponseDto>>(_productService.FindAll(page));
-            return Ok(categories);
+            IEnumerable<ProductResponseDto> products = _mapper.Map<IEnumerable<ProductResponseDto>>(_productService.FindAll(page));
+            return Ok(products);
         }
 
         [HttpPost]
@@ -47,10 +48,24 @@ namespace CatalogoApi.Controllers
         }
 
         [HttpPut("{id:int}")]
-        public IActionResult Update(int id, ProductRequestDto productRequestDto)
+        public ActionResult<ProductResponseDto> Update(int id, [FromBody] ProductRequestDto productRequestDto)
         {
             Product product = _productService.Update(id, _mapper.Map<Product>(productRequestDto));
             return Ok(_mapper.Map<ProductResponseDto>(product));
+        }
+
+
+        [HttpPatch("{id:int}/partialUpdate")]
+        public IActionResult PartialUpdate(int id, [FromBody] JsonPatchDocument<ProductUpdateDto> productUpdateDto)
+        {
+            Product product = _productService.PartialUpdate(id, productUpdateDto);
+
+            if (!TryValidateModel(product))
+            {
+                return BadRequest(ModelState);
+            }
+
+            return NoContent();
         }
 
         [HttpDelete("{id:int}")]

@@ -10,7 +10,7 @@ namespace CatalogoApi.Dtos
         public string Name { get; set; }
 
         [StringLength(255)]
-        public string ImageUrl { get; set; }
+        public string? ImageUrl { get; set; }
 
     }
 }

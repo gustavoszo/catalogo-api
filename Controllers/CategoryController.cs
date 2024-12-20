@@ -54,7 +54,7 @@ namespace CatalogoApi.Controllers
         }
 
         [HttpPut("{id:int}")]
-        public ActionResult<CategoryResponseDto> Update(int id, CategoryRequestDto categoryRequestDto)
+        public ActionResult<CategoryResponseDto> Update(int id, [FromBody] CategoryRequestDto categoryRequestDto)
         {
             Category category = _categoryService.Update(id, _mapper.Map<Category>(categoryRequestDto));
             return Ok(_mapper.Map<CategoryResponseDto>(category));

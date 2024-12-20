@@ -25,5 +25,10 @@ namespace CatalogoApi.Models
 
         public ICollection<Product>? Products { get; set; }
 
+        public override string ToString()
+        {
+            return Name;
+        }
+
     }
 }

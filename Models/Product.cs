@@ -40,5 +40,10 @@ namespace CatalogoApi.Models
         [JsonIgnore]
         public Category? Category { get; set; }
 
+        public override string ToString()
+        {
+            return Name;
+        }
+
     }
 }
