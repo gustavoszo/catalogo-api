@@ -5,9 +5,9 @@ namespace CatalogoApi.Repositories
     public interface ICategoryRepository : IRepository<Category>
     {
 
-        IEnumerable<Category> FindAllWithProducts(int page);
+        Task<IEnumerable<Category>> FindAllWithProductsAsync(int page);
 
-        IEnumerable<Category> FindAllFilteredByName(int page,string name);
+        Task<IEnumerable<Category>> FindAllFilteredByNameAsync(int page,string name);
 
     }
 }

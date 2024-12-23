@@ -16,9 +16,9 @@ namespace CatalogoApi.Repositories
             DbContext = dbContext;
         }
 
-        public IQueryable<T> FindAll(int page)
+        public async Task<IEnumerable<T>> FindAllAsync(int page)
         {
-            return DbContext.Set<T>().Skip(5*page).Take(5).AsNoTracking();
+            return await DbContext.Set<T>().Skip(5*page).Take(5).AsNoTracking().ToListAsync();
         }
         public T Create(T entity)
         {
@@ -34,9 +34,9 @@ namespace CatalogoApi.Repositories
             return entity;
         }
 
-        public T FindById(Expression<Func<T, bool>> predicate)
+        public async Task<T> FindByIdAsync(Expression<Func<T, bool>> predicate)
         {
-            return DbContext.Set<T>().AsNoTracking().FirstOrDefault(predicate);
+            return await DbContext.Set<T>().AsNoTracking().FirstOrDefaultAsync(predicate);
         }
 
         public void Delete(T entity)

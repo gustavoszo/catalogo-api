@@ -25,56 +25,56 @@ namespace CatalogoApi.Controllers
         }
 
         [HttpGet("products")]
-        public ActionResult<PageListResponseDto<CategoryResponseDto>> GetAllWithProducts([FromQuery] int page)
+        public async Task<ActionResult<PageListResponseDto<CategoryResponseDto>>> GetAllWithProductsAsync([FromQuery] int page)
         {
             if (page < 0) page = 0;
-            IEnumerable<CategoryResponseDto> categories = _mapper.Map<IEnumerable<CategoryResponseDto>>(_categoryService.FindAllWithProducts(page));
+            IEnumerable<CategoryResponseDto> categories = _mapper.Map<IEnumerable<CategoryResponseDto>>(await _categoryService.FindAllWithProductsAsync(page));
             return Ok(PageList<CategoryResponseDto>.ToPagedList(categories, page).ToPageListResponse());
         }
 
         [HttpGet]
-        public ActionResult<PageListResponseDto<CategoryResponseDto>> GetAll([FromQuery] int page)
+        public async Task<ActionResult<PageListResponseDto<CategoryResponseDto>>> GetAllAsync([FromQuery] int page)
         {
             if (page < 0) page = 0;
-            IEnumerable<CategoryResponseDto> categories = _mapper.Map<IEnumerable<CategoryResponseDto>>(_categoryService.FindAll(page));
+            IEnumerable<CategoryResponseDto> categories = _mapper.Map<IEnumerable<CategoryResponseDto>>(await _categoryService.FindAllAsync(page));
             return Ok(PageList<CategoryResponseDto>.ToPagedList(categories, page).ToPageListResponse());
         }
 
         [HttpGet("/name")]
-        public ActionResult<PageListResponseDto<CategoryResponseDto>> GetAllByName([FromQuery] int page, [FromQuery] string name = "")
+        public async Task<ActionResult<PageListResponseDto<CategoryResponseDto>>> GetAllByNameAsync([FromQuery] int page, [FromQuery] string name = "")
         {
             if (page < 0) page = 0;
-            IEnumerable<CategoryResponseDto> categories = _mapper.Map<IEnumerable<CategoryResponseDto>>(_categoryService.FindAllFilteredByName(page, name));
+            IEnumerable<CategoryResponseDto> categories = _mapper.Map<IEnumerable<CategoryResponseDto>>(await _categoryService.FindAllFilteredByNameAsync(page, name));
             return Ok(PageList<CategoryResponseDto>.ToPagedList(categories, page).ToPageListResponse());
         }
 
         [HttpPost]
-        public IActionResult Create([FromBody] CategoryRequestDto categoryRequestDto)
+        public async Task<IActionResult> CreateAsync([FromBody] CategoryRequestDto categoryRequestDto)
         {
-            Category category = _categoryService.Create(_mapper.Map<Category>(categoryRequestDto));
+            Category category = await _categoryService.CreateAsync(_mapper.Map<Category>(categoryRequestDto));
             CategoryResponseDto categoryResponseDto = _mapper.Map<CategoryResponseDto>(category);
             
-            return CreatedAtAction(nameof(GetById), new { id = categoryResponseDto.CategoryId }, categoryResponseDto);
+            return CreatedAtAction(nameof(GetByIdAsync), new { id = categoryResponseDto.CategoryId }, categoryResponseDto);
         }
 
         [HttpGet("{id:int:min(1)}")]
-        public ActionResult<CategoryResponseDto> GetById(int id)
+        public async Task<ActionResult<CategoryResponseDto>> GetByIdAsync(int id)
         {
-            Category category = _categoryService.FindById(id);
+            Category category = await _categoryService.FindByIdAsync(id);
             return Ok(_mapper.Map<CategoryResponseDto>(category));
         }
 
         [HttpPut("{id:int}")]
-        public ActionResult<Dtos.CategoryResponseDto> Update(int id, [FromBody] CategoryRequestDto categoryRequestDto)
+        public async Task<ActionResult<Dtos.CategoryResponseDto>> UpdateAsync(int id, [FromBody] CategoryRequestDto categoryRequestDto)
         {
-            Category category = _categoryService.Update(id, _mapper.Map<Category>(categoryRequestDto));
+            Category category = await _categoryService.UpdateAsync(id, _mapper.Map<Category>(categoryRequestDto));
             return base.Ok(_mapper.Map<CategoryResponseDto>(category));
         }
 
         [HttpDelete("{id:int}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> DeleteAsync(int id)
         {
-            _categoryService.Delete(id);
+            await _categoryService.Delete(id);
             return NoContent();
         }
 

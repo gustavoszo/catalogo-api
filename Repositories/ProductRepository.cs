@@ -1,5 +1,6 @@
 ﻿using CatalogoApi.Data;
 using CatalogoApi.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace CatalogoApi.Repositories
 {
@@ -7,9 +8,14 @@ namespace CatalogoApi.Repositories
     {
         public ProductRepository(AppDbContext dbContext) : base(dbContext) {}
 
-        public IEnumerable<Product> GetAllFilteredByPrice(int page, double min, double max)
+        public async Task<IEnumerable<Product>> GetAllFilteredByPriceAsync(int page, double min, double max)
         {
-            return FindAll(page).Where(p => p.Price >= min && p.Price <= max);
+            return await DbContext.Set<Product>()
+                          .Where(p => p.Price >= min && p.Price <= max)
+                          .Skip(5 * page)
+                          .Take(5)
+                          .AsNoTracking()
+                          .ToListAsync();
         }
     }
 }

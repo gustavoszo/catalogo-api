@@ -1,14 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.Eventing.Reader;
 using AutoMapper;
-using CatalogoApi.Data;
 using CatalogoApi.Dtos;
 using CatalogoApi.Exceptions;
 using CatalogoApi.Models;
 using CatalogoApi.Repositories;
 using Microsoft.AspNetCore.JsonPatch;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace CatalogoApi.Services
 {
@@ -28,46 +24,47 @@ namespace CatalogoApi.Services
             _mapper = mapper;
         }
 
-        public IEnumerable<Product> FindAll(int page)
+        public async Task<IEnumerable<Product>> FindAllAsync(int page)
         {
-            IEnumerable<Product> products = _unitOfWork.ProductRepository.FindAll(page);
+            IEnumerable<Product> products = await _unitOfWork.ProductRepository.FindAllAsync(page);
             return products;
         }
 
 
-        public IEnumerable<Product> FindAllByPrice(int page, double min, double max)
+        public async Task<IEnumerable<Product>> FindAllByPriceAsync(int page, double min, double max)
         {
-            IEnumerable<Product> products = _unitOfWork.ProductRepository.GetAllFilteredByPrice(page, min, max);
+            IEnumerable<Product> products = await _unitOfWork.ProductRepository.GetAllFilteredByPriceAsync(page, min, max);
             return products;
         }
 
-        public Product FindById(int id)
+        public async Task<Product> FindByIdAsync(int id)
         {
-            Product? product = _unitOfWork.ProductRepository.FindById(p => p.ProductId == id);
+            Product? product = await _unitOfWork.ProductRepository.FindByIdAsync(p => p.ProductId == id);
             if (product == null) throw new EntityNotFoundException($"Product com id '{id}' não encontrado");
 
             return product;
         }
 
-        public Product Create(Product product)
+        public async Task<Product> CreateAsync(Product product)
         {
-            Models.Category category = _categoryService.FindById(product.CategoryId.Value);
-            _logger.LogInformation(category.ToString());
+            Category category = await _categoryService.FindByIdAsync(product.CategoryId.Value);
+
             _unitOfWork.ProductRepository.Create(product);
             product.Category = category;
-            _unitOfWork.Commit();
+
+            await _unitOfWork.Commit();
 
             return product;
         }
 
-        public Product Update(int id, Product product)
+        public async Task<Product> UpdateAsync(int id, Product product)
         {
-            Product? savedProduct = FindById(id);
+            Product? savedProduct = await FindByIdAsync(id);
 
             // Atualiza todas as propriedades modificáveis automaticamente
             // _dbContext.Entry(savedProduct).CurrentValues.SetValues(product);
             
-            if (product.CategoryId != null) savedProduct.Category = _categoryService.FindById(product.CategoryId.Value);
+            if (product.CategoryId != null) savedProduct.Category = await _categoryService.FindByIdAsync(product.CategoryId.Value);
             if (product.QuantityAvaiable != null) savedProduct.QuantityAvaiable = product.QuantityAvaiable;
             if (product.Price != null) savedProduct.Price = product.Price;
             if (product.Name != null) savedProduct.Name = product.Name;
@@ -75,13 +72,13 @@ namespace CatalogoApi.Services
 
 
             _unitOfWork.ProductRepository.Update(savedProduct);
-            _unitOfWork.Commit();
+            await _unitOfWork.Commit();
 
             return savedProduct;
         }
-        public Product PartialUpdate(int id, JsonPatchDocument<ProductUpdateDto> patch)
+        public async Task<Product> PartialUpdateAsync(int id, JsonPatchDocument<ProductUpdateDto> patch)
         {
-            Product? product = _unitOfWork.ProductRepository.FindById(p => p.ProductId == id);
+            Product? product = await _unitOfWork.ProductRepository.FindByIdAsync(p => p.ProductId == id);
             if (product == null) throw new EntityNotFoundException($"Product com id '{id}' não encontrado");
             
             try
@@ -96,17 +93,17 @@ namespace CatalogoApi.Services
             }
 
             _unitOfWork.ProductRepository.Update(product);
-            _unitOfWork.Commit();
+            await _unitOfWork.Commit();
 
             return product;
         }
 
 
-        public void Delete(int id)
+        public async Task DeleteAsync(int id)
         {
-            Product? product = FindById(id);
+            Product? product = await FindByIdAsync(id);
             _unitOfWork.ProductRepository.Delete(product);
-            _unitOfWork.Commit();
+            await _unitOfWork.Commit();
         }
 
 

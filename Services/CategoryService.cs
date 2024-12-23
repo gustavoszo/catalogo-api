@@ -1,8 +1,6 @@
-﻿using CatalogoApi.Data;
-using CatalogoApi.Exceptions;
+﻿using CatalogoApi.Exceptions;
 using CatalogoApi.Models;
 using CatalogoApi.Repositories;
-using Microsoft.EntityFrameworkCore;
 
 namespace CatalogoApi.Services
 {
@@ -16,59 +14,59 @@ namespace CatalogoApi.Services
             _unitOfWork = unitOfWork;
         }
 
-        public IEnumerable<Category> FindAll(int page)
+        public async Task<IEnumerable<Category>> FindAllAsync(int page)
         {
-            IEnumerable<Category> categories = _unitOfWork.CategoryRepository.FindAll(page);
+            IEnumerable<Category> categories = await _unitOfWork.CategoryRepository.FindAllAsync(page);
             return categories;
         }
 
-        public IEnumerable<Category> FindAllWithProducts(int page)
+        public async Task<IEnumerable<Category>> FindAllWithProductsAsync(int page)
         {
-            IEnumerable<Category> categories = _unitOfWork.CategoryRepository.FindAllWithProducts(page);
+            IEnumerable<Category> categories = await _unitOfWork.CategoryRepository.FindAllWithProductsAsync(page);
             return categories;
         }
 
-        public IEnumerable<Category> FindAllFilteredByName(int page, string name)
+        public async Task<IEnumerable<Category>> FindAllFilteredByNameAsync(int page, string name)
         {
-            IEnumerable<Category> categories = _unitOfWork.CategoryRepository.FindAllFilteredByName(page, name);
+            IEnumerable<Category> categories = await _unitOfWork.CategoryRepository.FindAllFilteredByNameAsync(page, name);
             return categories;
         }
 
-        public Category FindById(int id)
+        public async Task<Category> FindByIdAsync(int id)
         {
-            Category? category = _unitOfWork.CategoryRepository.FindById(c => c.CategoryId == id);
+            Category? category = await _unitOfWork.CategoryRepository.FindByIdAsync(c => c.CategoryId == id);
             if (category == null) throw new EntityNotFoundException($"Category com id '{id}' não encontrado");
 
             return category;
         }
 
-        public Category Create(Category category)
+        public async Task<Category> CreateAsync(Category category)
         {
             _unitOfWork.CategoryRepository.Create(category);
-            _unitOfWork.Commit();
+            await _unitOfWork.Commit();
 
             return category;
         }
 
-        public Category Update(int id, Category category)
+        public async Task<Category> UpdateAsync(int id, Category category)
         {
-            Category? savedCategory = FindById(id);
+            Category? savedCategory = await FindByIdAsync(id);
 
             if(category.Name != null) savedCategory.Name = category.Name;
             if (category.ImageUrl != null) savedCategory.ImageUrl = category.ImageUrl;
 
             _unitOfWork.CategoryRepository.Update(savedCategory);
-            _unitOfWork.Commit();
+            await _unitOfWork.Commit();
 
             return savedCategory;
         }
 
-        public void Delete(int id)
+        public async Task Delete(int id)
         {
-            Category? category = FindById(id);
+            Category? category = await FindByIdAsync(id);
 
             _unitOfWork.CategoryRepository.Delete(category);
-            _unitOfWork.Commit();
+            await _unitOfWork.Commit();
         }
 
     }

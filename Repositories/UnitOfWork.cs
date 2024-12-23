@@ -31,9 +31,9 @@ namespace CatalogoApi.Repositories
             }
         }
 
-        public void Commit()
+        public async Task Commit()
         {
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
         }
 
         public void Dispose()

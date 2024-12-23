@@ -27,15 +27,15 @@ namespace CatalogoApi.Controllers
         }
 
         [HttpGet]
-        public ActionResult<PageListResponseDto<ProductResponseDto>> GetAll([FromQuery] int page)
+        public async Task<ActionResult<PageListResponseDto<ProductResponseDto>>> GetAllAsync([FromQuery] int page)
         {
             if (page < 0) page = 0;
-            IEnumerable<ProductResponseDto> products = _mapper.Map<IEnumerable<ProductResponseDto>>(_productService.FindAll(page));
+            IEnumerable<ProductResponseDto> products = _mapper.Map<IEnumerable<ProductResponseDto>>(await _productService.FindAllAsync(page));
             return Ok(PageList<ProductResponseDto>.ToPagedList(products, page).ToPageListResponse());
         }
 
         [HttpGet("price")]
-        public ActionResult<PageListResponseDto<ProductResponseDto>> GetAllByPrice([FromQuery] int page, 
+        public async Task<ActionResult<PageListResponseDto<ProductResponseDto>>> GetAllByPriceAsync([FromQuery] int page, 
             [FromQuery] double min, [FromQuery] double max)
         {
             if (page < 0) page = 0;
@@ -44,38 +44,38 @@ namespace CatalogoApi.Controllers
             if (min > max) min = max;
 
 
-            IEnumerable<ProductResponseDto> products = _mapper.Map<IEnumerable<ProductResponseDto>>(_productService.FindAllByPrice(page, min, max));
+            IEnumerable<ProductResponseDto> products = _mapper.Map<IEnumerable<ProductResponseDto>>(await _productService.FindAllByPriceAsync(page, min, max));
             return Ok(PageList<ProductResponseDto>.ToPagedList(products, page).ToPageListResponse());
         }
 
         [HttpPost]
-        public IActionResult Create([FromBody] ProductRequestDto productRequestDto)
+        public async Task<IActionResult> CreateAsync([FromBody] ProductRequestDto productRequestDto)
         {
-            Product product = _productService.Create(_mapper.Map<Product>(productRequestDto));
+            Product product = await _productService.CreateAsync(_mapper.Map<Product>(productRequestDto));
             ProductResponseDto productResponseDto = _mapper.Map<ProductResponseDto>(product);
 
-            return CreatedAtAction(nameof(GetById), new { id = productResponseDto.ProductId }, productResponseDto);
+            return CreatedAtAction(nameof(GetByIdAsync), new { id = productResponseDto.ProductId }, productResponseDto);
         }
 
         [HttpGet("{id:int:min(1)}")]
-        public ActionResult<ProductResponseDto> GetById(int id)
+        public async Task<ActionResult<ProductResponseDto>> GetByIdAsync(int id)
         {
-            Product product = _productService.FindById(id);
+            Product product = await _productService.FindByIdAsync(id);
             return Ok(_mapper.Map<ProductResponseDto>(product));
         }
 
         [HttpPut("{id:int}")]
-        public ActionResult<ProductResponseDto> Update(int id, [FromBody] ProductRequestDto productRequestDto)
+        public async Task<ActionResult<ProductResponseDto>> UpdateAsync(int id, [FromBody] ProductRequestDto productRequestDto)
         {
-            Product product = _productService.Update(id, _mapper.Map<Product>(productRequestDto));
+            Product product = await _productService.UpdateAsync(id, _mapper.Map<Product>(productRequestDto));
             return Ok(_mapper.Map<ProductResponseDto>(product));
         }
 
 
         [HttpPatch("{id:int}/partialUpdate")]
-        public IActionResult PartialUpdate(int id, [FromBody] JsonPatchDocument<ProductUpdateDto> productUpdateDto)
+        public async Task<IActionResult> PartialUpdateAsync(int id, [FromBody] JsonPatchDocument<ProductUpdateDto> productUpdateDto)
         {
-            Product product = _productService.PartialUpdate(id, productUpdateDto);
+            Product product = await _productService.PartialUpdateAsync(id, productUpdateDto);
 
             if (!TryValidateModel(product))
             {
@@ -86,9 +86,9 @@ namespace CatalogoApi.Controllers
         }
 
         [HttpDelete("{id:int}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> DeleteAsync(int id)
         {
-            _productService.Delete(id);
+            await _productService.DeleteAsync(id);
             return NoContent();
         }
 

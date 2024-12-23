@@ -5,10 +5,10 @@ namespace CatalogoApi.Repositories
     public interface IRepository<T>
     {
 
-        IQueryable<T> FindAll(int page);
+        Task<IEnumerable<T>> FindAllAsync(int page);
         T Create(T entity);
         T Update(T entity);
-        T FindById(Expression<Func<T, bool>> predicate);
+        Task<T> FindByIdAsync(Expression<Func<T, bool>> predicate);
         void Delete(T entity);
 
     }

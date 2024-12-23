@@ -8,14 +8,19 @@ namespace CatalogoApi.Repositories
     {
         public CategoryRepository(AppDbContext dbContext) : base(dbContext) {}
 
-        public IEnumerable<Category> FindAllFilteredByName(int page, string name)
+        public async Task<IEnumerable<Category>> FindAllFilteredByNameAsync(int page, string name)
         {
-            return FindAll(page).Where(c => c.Name.ToLower().Contains(name.ToLower()));
+            return await DbContext.Set<Category>()
+                          .Where(c => c.Name.ToLower().Contains(name.ToLower()))
+                          .Skip(5 * page)
+                          .Take(5)
+                          .AsNoTracking()
+                          .ToListAsync();
         }
 
-        public IEnumerable<Category> FindAllWithProducts(int page)
+        public async Task<IEnumerable<Category>> FindAllWithProductsAsync(int page)
         {
-            return DbContext.Categories.Include(c => c.Products).Skip((page - 1) * 5).ToList();
+            return await DbContext.Categories.Include(c => c.Products).Skip((page - 1) * 5).ToListAsync();
         }
     }
 }
