@@ -7,5 +7,9 @@ namespace CatalogoApi.Repositories
     {
         public ProductRepository(AppDbContext dbContext) : base(dbContext) {}
 
+        public IEnumerable<Product> GetAllFilteredByPrice(int page, double min, double max)
+        {
+            return FindAll(page).Where(p => p.Price >= min && p.Price <= max);
+        }
     }
 }

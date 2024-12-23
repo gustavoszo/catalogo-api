@@ -5,7 +5,6 @@ namespace CatalogoApi.Dtos.Profiles
 {
     public class ProductProfile : Profile
     {
-
         public ProductProfile() 
         {
             CreateMap<Product, ProductRequestDto>().ReverseMap();

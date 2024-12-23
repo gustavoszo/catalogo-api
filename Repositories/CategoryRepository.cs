@@ -8,9 +8,14 @@ namespace CatalogoApi.Repositories
     {
         public CategoryRepository(AppDbContext dbContext) : base(dbContext) {}
 
-        public IEnumerable<Category> FindAllWithProducts()
+        public IEnumerable<Category> FindAllFilteredByName(int page, string name)
         {
-            return DbContext.Categories.Include(c => c.Products).ToList();
+            return FindAll(page).Where(c => c.Name.ToLower().Contains(name.ToLower()));
+        }
+
+        public IEnumerable<Category> FindAllWithProducts(int page)
+        {
+            return DbContext.Categories.Include(c => c.Products).Skip((page - 1) * 5).ToList();
         }
     }
 }

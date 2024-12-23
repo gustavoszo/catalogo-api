@@ -18,7 +18,7 @@ namespace CatalogoApi.Dtos
 
         public string ImageUrl { get; set; }
 
-        public CategoryResponseDto Category { get; set; }
+        // public CategoryResponseDto Category { get; set; }
 
         public int CategoryId { get; set; }
     }

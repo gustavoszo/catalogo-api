@@ -30,7 +30,14 @@ namespace CatalogoApi.Services
 
         public IEnumerable<Product> FindAll(int page)
         {
-            IEnumerable<Product> products = _unitOfWork.ProductRepository.FindAll();
+            IEnumerable<Product> products = _unitOfWork.ProductRepository.FindAll(page);
+            return products;
+        }
+
+
+        public IEnumerable<Product> FindAllByPrice(int page, double min, double max)
+        {
+            IEnumerable<Product> products = _unitOfWork.ProductRepository.GetAllFilteredByPrice(page, min, max);
             return products;
         }
 
@@ -44,7 +51,7 @@ namespace CatalogoApi.Services
 
         public Product Create(Product product)
         {
-            Category category = _categoryService.FindById(product.CategoryId.Value);
+            Models.Category category = _categoryService.FindById(product.CategoryId.Value);
             _logger.LogInformation(category.ToString());
             _unitOfWork.ProductRepository.Create(product);
             product.Category = category;

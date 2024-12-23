@@ -18,13 +18,19 @@ namespace CatalogoApi.Services
 
         public IEnumerable<Category> FindAll(int page)
         {
-            IEnumerable<Category> categories = _unitOfWork.CategoryRepository.FindAll();
+            IEnumerable<Category> categories = _unitOfWork.CategoryRepository.FindAll(page);
             return categories;
         }
 
         public IEnumerable<Category> FindAllWithProducts(int page)
         {
-            IEnumerable<Category> categories = _unitOfWork.CategoryRepository.FindAllWithProducts();
+            IEnumerable<Category> categories = _unitOfWork.CategoryRepository.FindAllWithProducts(page);
+            return categories;
+        }
+
+        public IEnumerable<Category> FindAllFilteredByName(int page, string name)
+        {
+            IEnumerable<Category> categories = _unitOfWork.CategoryRepository.FindAllFilteredByName(page, name);
             return categories;
         }
 

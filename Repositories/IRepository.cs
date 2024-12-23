@@ -5,7 +5,7 @@ namespace CatalogoApi.Repositories
     public interface IRepository<T>
     {
 
-        IQueryable<T> FindAll();
+        IQueryable<T> FindAll(int page);
         T Create(T entity);
         T Update(T entity);
         T FindById(Expression<Func<T, bool>> predicate);

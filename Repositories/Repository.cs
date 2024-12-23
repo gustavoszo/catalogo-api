@@ -16,9 +16,9 @@ namespace CatalogoApi.Repositories
             DbContext = dbContext;
         }
 
-        public IQueryable<T> FindAll()
+        public IQueryable<T> FindAll(int page)
         {
-            return DbContext.Set<T>().AsNoTracking();
+            return DbContext.Set<T>().Skip(5*page).Take(5).AsNoTracking();
         }
         public T Create(T entity)
         {
