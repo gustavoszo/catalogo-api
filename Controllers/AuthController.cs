@@ -1,7 +1,9 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using AutoMapper;
 using CatalogoApi.Dtos;
 using CatalogoApi.Models;
+using CatalogoApi.Models.Enums;
 using CatalogoApi.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -35,12 +37,16 @@ namespace CatalogoApi.Controllers
             var userExists = await _userManager.FindByNameAsync(userRegisterDto.Username);
             if (userExists != null) return BadRequest(new { Message = $"Username '{userRegisterDto.Username}' já está cadastrado" });
 
-            var result = await _userManager.CreateAsync(_mapper.Map<User>(userRegisterDto), userRegisterDto.Password);
+            User user = _mapper.Map<User>(userRegisterDto);
+            var result = await _userManager.CreateAsync(user, userRegisterDto.Password);
 
             if (result.Errors.Any())
             {
                 return BadRequest(new { Message = result.Errors.Select(e => e.Description) });
             }
+
+            await _userManager.AddToRoleAsync(user, UserRole.User.ToString());
+            
             return Created();
         }
 
@@ -51,7 +57,17 @@ namespace CatalogoApi.Controllers
 
             if (user is not null && await _userManager.CheckPasswordAsync(user, loginDto.Password))
             {
-                var token = _jwtService.GetToken(loginDto.Username);
+                var userRoles = await _userManager.GetRolesAsync(user);
+                var claims = new List<Claim>();
+
+                claims.Add(new Claim(ClaimTypes.Name, loginDto.Username));
+
+                foreach (var role in userRoles)
+                { 
+                    claims.Add(new Claim(ClaimTypes.Role, role));
+                }
+
+                var token = _jwtService.GetToken(claims);
                 return Ok ( new { AccessToken = token } );
             }
             return Unauthorized(new { Message = "Credenciais inválidas" } );

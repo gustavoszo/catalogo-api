@@ -5,6 +5,7 @@ using CatalogoApi.Dtos;
 using CatalogoApi.Models;
 using CatalogoApi.Pagination;
 using CatalogoApi.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -18,12 +19,14 @@ namespace CatalogoApi.Controllers
         private readonly ProductService _productService;
         private readonly IMapper _mapper;
         private readonly ILogger<ProductController> _logger;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public ProductController(ProductService productService, IMapper mapper, ILogger<ProductController> logger)
+        public ProductController(ProductService productService, IMapper mapper, ILogger<ProductController> logger, RoleManager<IdentityRole> roleManager)
         {
             _productService = productService;
             _mapper = mapper;
             _logger = logger;
+            _roleManager = roleManager;
         }
 
         [HttpGet]
@@ -54,7 +57,8 @@ namespace CatalogoApi.Controllers
             Product product = await _productService.CreateAsync(_mapper.Map<Product>(productRequestDto));
             ProductResponseDto productResponseDto = _mapper.Map<ProductResponseDto>(product);
 
-            return CreatedAtAction(nameof(GetByIdAsync), new { id = productResponseDto.ProductId }, productResponseDto);
+            return Created($"https://localhost:7123/api/v1/product/{product.ProductId}", productResponseDto);
+            // return CreatedAtAction(nameof(GetByIdAsync), new { id = productResponseDto.ProductId });
         }
 
         [HttpGet("{id:int:min(1)}")]

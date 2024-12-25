@@ -15,9 +15,9 @@ namespace CatalogoApi.Security
             _jwtUtil = jwtUtil;
         }
 
-        public string GetToken(string username)
+        public string GetToken(List<Claim> claims)
         {
-            return _jwtUtil.GenerateToken(username);
+            return _jwtUtil.GenerateToken(claims);
         }
 
     }

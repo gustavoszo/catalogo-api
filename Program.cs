@@ -69,7 +69,17 @@ namespace CatalogoApi
                 };
             });
 
-            builder.Services.AddAuthorization();
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+                // options.AddPolicy("MyUserOnly", policy => policy.RequireRole("Admin").RequireClaim("Name", "gustavo"));
+                /*
+                options.AddPolicy("ExclusiveOnly", policy => 
+                                  policy.RequireAssertion(context => 
+                                  context.User.HasClaim(claim => claim.Type == "id" && claim.Value == "gu") || context.User.IsInRole("SuperAdmin")
+                                  ));
+                */
+            });
 
             builder.Services.AddControllers().AddJsonOptions(options =>
             {

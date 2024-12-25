@@ -43,7 +43,7 @@ namespace CatalogoApi.Controllers
             return Ok(PageList<CategoryResponseDto>.ToPagedList(categories, page).ToPageListResponse());
         }
 
-        [HttpGet("/name")]
+        [HttpGet("name")]
         public async Task<ActionResult<PageListResponseDto<CategoryResponseDto>>> GetAllByNameAsync([FromQuery] int page, [FromQuery] string name = "")
         {
             if (page < 0) page = 0;
@@ -51,13 +51,15 @@ namespace CatalogoApi.Controllers
             return Ok(PageList<CategoryResponseDto>.ToPagedList(categories, page).ToPageListResponse());
         }
 
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "AdminOnly")]
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromBody] CategoryRequestDto categoryRequestDto)
         {
             Category category = await _categoryService.CreateAsync(_mapper.Map<Category>(categoryRequestDto));
             CategoryResponseDto categoryResponseDto = _mapper.Map<CategoryResponseDto>(category);
-            
-            return CreatedAtAction(nameof(GetByIdAsync), new { id = categoryResponseDto.CategoryId }, categoryResponseDto);
+
+            return Created($"https://localhost:7123/api/v1/category/{category.CategoryId}", categoryResponseDto);
+            // return CreatedAtAction(nameof(GetByIdAsync), new { id = categoryResponseDto.CategoryId }, categoryResponseDto);
         }
 
         [HttpGet("{id:int:min(1)}")]

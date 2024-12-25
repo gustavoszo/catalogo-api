@@ -1,4 +1,5 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -28,14 +29,14 @@ namespace CatalogoApi.Security
             return new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
         }
 
-        public string GenerateToken(string username)
+        public string GenerateToken(List<Claim> claims)
         {
             var token = new JwtSecurityToken
                 (
                 issuer: _configuration["JWT:ValidIssuer"],  
                 audience: _configuration["JWT:ValidAudience"],
                 expires: DateTime.Now.AddMinutes(double.Parse(_configuration["JWT:TokenValidityInMinutes"])),
-                claims: new Claim[] { new Claim(ClaimTypes.Name, username) },
+                claims: claims,
                 signingCredentials: GetSigningCredentials()
                 );
 
