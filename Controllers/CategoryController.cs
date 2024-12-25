@@ -4,6 +4,8 @@ using CatalogoApi.Dtos;
 using CatalogoApi.Models;
 using CatalogoApi.Pagination;
 using CatalogoApi.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -32,6 +34,7 @@ namespace CatalogoApi.Controllers
             return Ok(PageList<CategoryResponseDto>.ToPagedList(categories, page).ToPageListResponse());
         }
 
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet]
         public async Task<ActionResult<PageListResponseDto<CategoryResponseDto>>> GetAllAsync([FromQuery] int page)
         {
