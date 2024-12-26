@@ -34,6 +34,8 @@ namespace CatalogoApi.Controllers
         }
 
         [HttpPost("register")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Register([FromBody] UserRegisterDto userRegisterDto)
         {
             var userExists = await _userManager.FindByNameAsync(userRegisterDto.Username);
@@ -53,6 +55,8 @@ namespace CatalogoApi.Controllers
         }
 
         [HttpPost("login")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
         {
             var user = await _userManager.FindByNameAsync(loginDto.Username);
@@ -70,7 +74,7 @@ namespace CatalogoApi.Controllers
                 }
 
                 var token = _jwtService.GetToken(claims);
-                return Ok ( new { AccessToken = token } );
+                return Ok( new { AccessToken = token } );
             }
             return Unauthorized(new { Message = "Credenciais inválidas" } );
         }

@@ -55,6 +55,8 @@ namespace CatalogoApi.Controllers
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "AdminOnly")]
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CreateAsync([FromBody] CategoryRequestDto categoryRequestDto)
         {
             Category category = await _categoryService.CreateAsync(_mapper.Map<Category>(categoryRequestDto));
@@ -65,6 +67,8 @@ namespace CatalogoApi.Controllers
         }
 
         [HttpGet("{id:int:min(1)}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<CategoryResponseDto>> GetByIdAsync(int id)
         {
             Category category = await _categoryService.FindByIdAsync(id);
@@ -72,6 +76,9 @@ namespace CatalogoApi.Controllers
         }
 
         [HttpPut("{id:int}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Dtos.CategoryResponseDto>> UpdateAsync(int id, [FromBody] CategoryRequestDto categoryRequestDto)
         {
             Category category = await _categoryService.UpdateAsync(id, _mapper.Map<Category>(categoryRequestDto));
@@ -79,6 +86,8 @@ namespace CatalogoApi.Controllers
         }
 
         [HttpDelete("{id:int}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteAsync(int id)
         {
             await _categoryService.Delete(id);

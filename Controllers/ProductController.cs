@@ -54,6 +54,8 @@ namespace CatalogoApi.Controllers
         }
 
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CreateAsync([FromBody] ProductRequestDto productRequestDto)
         {
             Product product = await _productService.CreateAsync(_mapper.Map<Product>(productRequestDto));
@@ -64,6 +66,8 @@ namespace CatalogoApi.Controllers
         }
 
         [HttpGet("{id:int:min(1)}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<ProductResponseDto>> GetByIdAsync(int id)
         {
             Product product = await _productService.FindByIdAsync(id);
@@ -71,6 +75,9 @@ namespace CatalogoApi.Controllers
         }
 
         [HttpPut("{id:int}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<ProductResponseDto>> UpdateAsync(int id, [FromBody] ProductRequestDto productRequestDto)
         {
             Product product = await _productService.UpdateAsync(id, _mapper.Map<Product>(productRequestDto));
@@ -79,6 +86,9 @@ namespace CatalogoApi.Controllers
 
 
         [HttpPatch("{id:int}/partialUpdate")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> PartialUpdateAsync(int id, [FromBody] JsonPatchDocument<ProductUpdateDto> productUpdateDto)
         {
             Product product = await _productService.PartialUpdateAsync(id, productUpdateDto);
@@ -92,6 +102,8 @@ namespace CatalogoApi.Controllers
         }
 
         [HttpDelete("{id:int}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteAsync(int id)
         {
             await _productService.DeleteAsync(id);
