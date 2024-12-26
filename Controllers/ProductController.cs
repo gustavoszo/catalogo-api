@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using Asp.Versioning;
 using AutoMapper;
 using CatalogoApi.Data;
 using CatalogoApi.Dtos;
@@ -13,7 +14,8 @@ using Microsoft.EntityFrameworkCore;
 namespace CatalogoApi.Controllers
 {
     [ApiController]
-    [Route("api/v1/[Controller]")]
+    [Route("api/v{version:apiVersion}/[Controller]")]
+    [ApiVersion("1.0")]
     public class ProductController : ControllerBase
     {
         private readonly ProductService _productService;

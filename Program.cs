@@ -1,4 +1,5 @@
 
+using Asp.Versioning;
 using CatalogoApi.Data;
 using CatalogoApi.Filters;
 using CatalogoApi.Models;
@@ -116,6 +117,30 @@ namespace CatalogoApi
                 });
             });
 
+            // CORS
+            var OrigensComAcessoPermitido = "_origensComAcessoPermitido";
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy(name: OrigensComAcessoPermitido,
+                                  policy =>
+                                  {
+                                      policy.WithOrigins("https://apirequest.io");
+                                  });
+            });
+
+            // Versionamento
+            builder.Services.AddApiVersioning(o =>
+            {
+                o.DefaultApiVersion = new ApiVersion(1, 0);
+                o.AssumeDefaultVersionWhenUnspecified = true;
+                o.ReportApiVersions = true;
+                o.ApiVersionReader = ApiVersionReader.Combine(new UrlSegmentApiVersionReader());
+            }).AddApiExplorer(options =>
+            {
+                options.GroupNameFormat = "'v'VVV";
+                options.SubstituteApiVersionInUrl = true;
+            });
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -129,7 +154,11 @@ namespace CatalogoApi
             app.UseMiddleware<Exceptions.ExceptionHandlerMiddleware>();
 
             app.UseHttpsRedirection();
+            app.UseStaticFiles();
+            app.UseRouting();
 
+            app.UseCors(OrigensComAcessoPermitido);
+            
             app.UseAuthorization();
 
 
