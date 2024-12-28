@@ -10,8 +10,8 @@ A API permite:
 
 Tecnologias Utilizadas:
 
-•	ASP .NET Core - C#
-• Entity Framework Core
-•	Identity - Sistema de autenticação e autorização.
-•	JWT Bearer
-•	Banco de dados - MySQL
+-	ASP .NET Core - C#
+- Entity Framework Core
+-	Identity - Sistema de autenticação e autorização.
+-	JWT Bearer
+-	Banco de dados - MySQL
